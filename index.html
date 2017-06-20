@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Easy vreco</title>
+    <title>Place Autocomplete</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
@@ -11,19 +11,19 @@
     <!-- Optional theme -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
     <link rel="stylesheet" href="css/style.css">
-
-    <style>      
+    <style>
+      
       #map {
         height: 100vh;
       }
-      
+     
       html, body {
-        height: 100%;
+        height: 100vh;
         margin: 0;
         padding: 0;
       }
       .controls {
-        margin-top: 0px;
+        margin-top: 10px;
         border: 1px solid transparent;
         border-radius: 2px 0 0 2px;
         box-sizing: border-box;
@@ -32,7 +32,7 @@
         outline: none;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
         display: inline-block;
-        
+        margin-right: 15px;
       }
 
       #origin-input,
@@ -45,7 +45,7 @@
         padding: 0 11px 0 13px;
         text-overflow: ellipsis;
         width: 200px;
-       
+        display: inline-block;
       }
 
       #origin-input:focus,
@@ -54,59 +54,44 @@
       }
 
       #mode-selector {
-        width: 100px;
         color: #fff;
         background-color: #4d90fe;
         margin-left: 12px;
-        padding: 5px 11px 0px 11px; 
-
+        padding: 5px 11px 0px 11px;
       }
 
       #mode-selector label {
         font-family: Roboto;
         font-size: 13px;
         font-weight: 300;
-        
       }
 
     </style>
   </head>
+
+
   <body>
     <div class="container-fluid">
       <div class="row">
-        <div class="col-md-12" id="mapa">
+        <div class="col-md-12" id="mapa" align="center">
           <button id="encuentrame">Encuentrame</button>
 
-          <input id="origin-input" class="controls" type="text" placeholder="Enter an origin location">
+            <input id="origin-input" class="controls" type="text" placeholder="Enter an origin location">
 
-          <input id="destination-input" class="controls" type="text" placeholder="Enter a destination location">
+            <input id="destination-input" class="controls" type="text" placeholder="Enter a destination location">
 
-          <!--<div id="mode-selector" class="controls">
-            <input type="radio" name="type" id="changemode-walking" checked="checked">
-            <label for="changemode-walking">Walking</label>
-
-            <input type="radio" name="type" id="changemode-transit">
-            <label for="changemode-transit">Transit</label>
-
-            <input type="radio" name="type" id="changemode-driving">
-            <label for="changemode-driving">Driving</label>
-
-          </div>-->          
-
-          <button id="encuentrame">ruta</button>
-    
-        </div>
+          <button id="encuentrame" id="changemode-walking">ruta</button>  
       </div>
+        </div>
 
       <div class="row">
         <div class="col-md-12">
-          <div id="map"></div>
+            <div id="map"></div>
         </div>
       </div>
-    </div>
 
-    <script>
-      
+    <script>      
+
       function initMap() {
         var map = new google.maps.Map(document.getElementById('map'), {
           mapTypeControl: false,
@@ -115,11 +100,9 @@
         });
 
         new AutocompleteDirectionsHandler(map);
+
       }
 
-       /**
-        * @constructor
-       */
       function AutocompleteDirectionsHandler(map) {
         this.map = map;
         this.originPlaceId = null;
@@ -127,7 +110,7 @@
         this.travelMode = 'WALKING';
         var originInput = document.getElementById('origin-input');
         var destinationInput = document.getElementById('destination-input');
-        var modeSelector = document.getElementById('mode-selector');
+        var modeSelector = document.getElementById('encuentrame');
         this.directionsService = new google.maps.DirectionsService;
         this.directionsDisplay = new google.maps.DirectionsRenderer;
         this.directionsDisplay.setMap(map);
@@ -144,9 +127,9 @@
         this.setupPlaceChangedListener(originAutocomplete, 'ORIG');
         this.setupPlaceChangedListener(destinationAutocomplete, 'DEST');
 
-        this.mapa.controls[google.maps.ControlPosition.TOP_LEFT].push(originInput);
-        this.mapa.controls[google.maps.ControlPosition.TOP_LEFT].push(destinationInput);
-        this.mapa.controls[google.maps.ControlPosition.TOP_LEFT].push(modeSelector);
+        this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(originInput);
+        this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(destinationInput);
+        this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(encuentrame);
       }
 
       AutocompleteDirectionsHandler.prototype.setupClickListener = function(id, mode) {
@@ -174,7 +157,6 @@
           }
           me.route();
         });
-
       };
 
       AutocompleteDirectionsHandler.prototype.route = function() {
